@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "*.js": "javascript",
-        "iosfwd": "cpp",
-        "xstring": "cpp",
-        "vector": "cpp"
-    }
-}
