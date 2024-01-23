@@ -24,6 +24,48 @@ using namespace std;
 // Need to create a class for the generalized data type -- a 2D vector will be sufficient. See DataHolder.h for more info.
 std::vector<std::vector<std::string>> DataHolder::data;
 
+string getFileName(string path, string suffix){
+        printf("%d\n",28);
+         // Find the last occurrence of the dot
+        size_t dotIndex = path.find_last_of('.');
+        size_t slashIndex = path.find_last_of('/');
+        string filename = "";
+        string catname = "items";
+        // Check if dot is found and it's not the first character
+        if (dotIndex != std::string::npos && dotIndex > 0) {
+            // Replace the file extension with ".json"
+             filename = path.substr(0, dotIndex) + "." + suffix;
+        }else{
+            printf("Error: Invalid file type\n");
+            exit(3); //error code for invalid type
+        }
+
+
+        printf("%d\n",44);
+        return filename;
+        
+}
+
+string getCatName(string path){
+        printf("%d\n",47);
+         // Find the last occurrence of the dot
+        size_t dotIndex = path.find_last_of('.');
+        size_t slashIndex = path.find_last_of('/');
+        string catname = "items";
+        // Check if dot is found and it's not the first character
+        if (dotIndex != std::string::npos && dotIndex > 0) {
+              if (slashIndex != std::string::npos && dotIndex != std::string::npos && dotIndex > slashIndex) {
+                // Extract the substring between the last slash and the last dot
+                catname = path.substr(slashIndex + 1, dotIndex - slashIndex - 1);
+            }
+        }else{
+            printf("Error: Invalid file type\n");
+            exit(3); //error code for invalid type
+        }
+        printf("%d\n",65);
+        return catname;
+}
+
 bool extractCSV(string path) {
     ifstream input_file(path);
     string line;
@@ -58,24 +100,18 @@ bool extractJSON(string path) {
     ifstream input_file(path);
     string line;
     vector<string> categories;
-    // for each line
-    // dump the contents into a dictionary
+    
+    TODO: //extract categories from json file
+
     return true;
 }
 
 bool convertToCSV(string path, int file_type) {
-    if (file_type == 2) {
-        // convert json to csv
-    }
-
-    return true;
-}
-
-bool convertToJSON(string path, int file_type) {
     vector<string> categories;
-    if (file_type == 1) {
-        extractCSV(path);
-        string filename = "items.json";
+    if (file_type != 1) {
+        extractJSON(path);
+        string filename = getFileName(path, "csv");
+
         ofstream outfile(filename);
 
         if (!outfile.is_open()) {
@@ -83,15 +119,65 @@ bool convertToJSON(string path, int file_type) {
             return 1;
         }
 
+        for (int i = 0; i < DataHolder::data[0].size(); i++){
+            categories.push_back(DataHolder::data[0][i]);
+        }
+
+        for (int i = 0; i < categories.size(); i++) {
+            outfile << categories[i];
+            // Check if it's at the end of the categories, then no need for a comma
+            if (i != categories.size() - 1) {
+                outfile << ",";
+            } else {
+                outfile << "\n";
+            }
+        }
+
+        for (int i = 1; i < DataHolder::getSize(); i++) {
+            for (int j = 0; j < categories.size(); j++) {
+                outfile << DataHolder::data[i][j];
+
+                // Check if it's at the end of the categories, then no need for a comma
+                if (j != categories.size() - 1) {
+                    outfile << ",";
+                } else {
+                    outfile << "\n";
+                }
+            }
+        }
+
+        outfile.close();
+        printf("Success!\n");
+
+        return true;
+    }
+
+    return false;
+}
+
+bool convertToJSON(string path, int file_type) {
+    vector<string> categories;
+    if (file_type != 2) {
+        extractCSV(path);
+        
+        string filename = getFileName(path, "json");
+        string catname = getCatName(path);
+
+        ofstream outfile(filename);
+
+        if (!outfile.is_open()) {
+            printf("Error opening file: %s\n", filename);
+            return 3;
+        }
         
         for (int i = 0; i < DataHolder::data[0].size(); i++){
             categories.push_back(DataHolder::data[0][i]);
         }
 
-        int count = 0;
+
 
         outfile << "{\n";
-        outfile << "\t\"items\": [\n";
+        outfile << "\t\""<< catname << "\": [\n";
         for (int i = 1; i < DataHolder::getSize(); i++) {
             outfile << "\t\t{\n";
 
@@ -120,14 +206,8 @@ bool convertToJSON(string path, int file_type) {
         printf("Success!\n");
         return true;
     }
-    else if (file_type == 3) {
-        // convert xml to json
-        return true;
-    }else{
-        return false;
-    }
 
-    return true;
+    return false;
 }
 
 int main(int argc, char* argv[]) {
