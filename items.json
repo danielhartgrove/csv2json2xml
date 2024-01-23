@@ -7,10 +7,118 @@
 			"year_published": "1954"
 		},
 		{
-			"title": "Pride and Prejudice",
-			"author": "Jane Austen",
-			"genre": "Romance",
-			"year_published": "1813"
+			"title": "Harry Potter and the Philosophers Stone",
+			"author": "J.K. Rowling",
+			"genre": "Fantasy",
+			"year_published": "1997"
+		},
+		{
+			"title": "The Catcher in the Rye",
+			"author": "J.D. Salinger",
+			"genre": "Fiction",
+			"year_published": "1951"
+		},
+		{
+			"title": "The Chronicles of Narnia",
+			"author": "C.S. Lewis",
+			"genre": "Fantasy",
+			"year_published": "1950-1956"
+		},
+		{
+			"title": "The Great Expectations",
+			"author": "Charles Dickens",
+			"genre": "Classic",
+			"year_published": "1860"
+		},
+		{
+			"title": "One Hundred Years of Solitude",
+			"author": "Gabriel Garcia Marquez",
+			"genre": "Fantasy",
+			"year_published": "1967"
+		},
+		{
+			"title": "The Hunger Games",
+			"author": "Suzanne Collins",
+			"genre": "Dystopian Fiction",
+			"year_published": "2008"
+		},
+		{
+			"title": "The Da Vinci Code",
+			"author": "Dan Brown",
+			"genre": "Mystery",
+			"year_published": "2003"
+		},
+		{
+			"title": "The Hobbit",
+			"author": "J.R.R. Tolkien",
+			"genre": "Fantasy",
+			"year_published": "1937"
+		},
+		{
+			"title": "Brave New World",
+			"author": "Aldous Huxley",
+			"genre": "Dystopian Fiction",
+			"year_published": "1932"
+		},
+		{
+			"title": "The Shining",
+			"author": "Stephen King",
+			"genre": "Horror",
+			"year_published": "1977"
+		},
+		{
+			"title": "The Fault in Our Stars",
+			"author": "John Green",
+			"genre": "Young Adult",
+			"year_published": "2012"
+		},
+		{
+			"title": "Moby-Dick",
+			"author": "Herman Melville",
+			"genre": "Adventure",
+			"year_published": "1851"
+		},
+		{
+			"title": "The Alchemist",
+			"author": "Paulo Coelho",
+			"genre": "Philosophical Fiction",
+			"year_published": "1988"
+		},
+		{
+			"title": "The Girl with the Dragon Tattoo",
+			"author": "Stieg Larsson",
+			"genre": "Thriller",
+			"year_published": "2005"
+		},
+		{
+			"title": "The Odyssey",
+			"author": "Homer",
+			"genre": "Epic Poetry",
+			"year_published": "c. 8th century BCE"
+		},
+		{
+			"title": "The War of the Worlds",
+			"author": "H.G. Wells",
+			"genre": "Science Fiction",
+			"year_published": "1898"
+		},
+		{
+			"title": "A Tale of Two Cities",
+			"author": "Charles Dickens",
+			"genre": "Historical Fiction",
+			"year_published": "1859"
+		},
+		{
+			"title": "The Jungle Book",
+			"author": "Rudyard Kipling",
+			"genre": "Children's Literature",
+			"year_published": "1894"
+		},
+		{
+			"title": "Gone with the Wind",
+			"author": "Margaret Mitchell",
+			"genre": "Historical Fiction",
+			"year_published": "1936"
 		}
 	]
 }
