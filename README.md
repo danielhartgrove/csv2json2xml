@@ -12,7 +12,7 @@ For example, `./csv2json test.csv json`
 
 ## Current State:
 - Can convert CSV to CSV and JSON
-~~-Can convert JSON to JSON and CSV~~
-~~-XML implemented~~
-~~-Makefile~~
-~~-Available for download~~
+- Can convert *simple* JSON to JSON and CSV
+-~~XML implemented~~
+-~~Makefile~~
+-~~Available for download~~

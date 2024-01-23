@@ -8,6 +8,7 @@
 #include <vector>
 #include <sstream>
 #include <filesystem>
+#include <algorithm>
 #include "DataHolder.h"
 
 using namespace std;
@@ -23,9 +24,9 @@ using namespace std;
 
 // Need to create a class for the generalized data type -- a 2D vector will be sufficient. See DataHolder.h for more info.
 std::vector<std::vector<std::string>> DataHolder::data;
+std::vector<std::string> DataHolder::categories;
 
 string getFileName(string path, string suffix){
-        printf("%d\n",28);
          // Find the last occurrence of the dot
         size_t dotIndex = path.find_last_of('.');
         size_t slashIndex = path.find_last_of('/');
@@ -41,13 +42,11 @@ string getFileName(string path, string suffix){
         }
 
 
-        printf("%d\n",44);
         return filename;
         
 }
 
 string getCatName(string path){
-        printf("%d\n",47);
          // Find the last occurrence of the dot
         size_t dotIndex = path.find_last_of('.');
         size_t slashIndex = path.find_last_of('/');
@@ -62,13 +61,13 @@ string getCatName(string path){
             printf("Error: Invalid file type\n");
             exit(3); //error code for invalid type
         }
-        printf("%d\n",65);
         return catname;
 }
 
 bool extractCSV(string path) {
     ifstream input_file(path);
     string line;
+    int count = 0;
 
     while (getline(input_file, line)) {
         if(line==""){
@@ -80,7 +79,6 @@ bool extractCSV(string path) {
         // Use stringstream to tokenize the line into categories
         stringstream ss(line);
         string field;
-
         
         // Tokenize the line using ',' as the delimiter
         while (getline(ss, field, ',')) {
@@ -89,25 +87,68 @@ bool extractCSV(string path) {
         }
 
         // Add the completed row to the main data
-        DataHolder::data.push_back(row);
+        if(count == 0){
+            DataHolder::categories = row;
+            count++; // no use in incrementing count each time as it is only relevant for the first check. Useless computation.
+        }else{
+            DataHolder::data.push_back(row);
+        }
+        
     }
 
     input_file.close();
+    DataHolder:: printAll();
     return true;
 }
 
+// Having a spot of bother with extracting the JSON data
 bool extractJSON(string path) {
     ifstream input_file(path);
     string line;
     vector<string> categories;
-    
-    TODO: //extract categories from json file
 
+    while (getline(input_file, line)) {
+    
+        // Remove unwanted characters from the line
+        line.erase(remove_if(line.begin(), line.end(), [](char c) {return c == '{' || c == '}' || c == '\"' || c == '[' || c == ']' || c == '\t' || c == '\n' || c == ',';}), line.end());
+
+        if (line != "") {
+            // Create a new vector for each row
+            vector<string> row;
+
+            // Use stringstream to tokenize the line into categories
+            stringstream ss(line);
+            string field;
+
+
+            // Tokenize the line using ':' as the delimiter
+            int count = 0;
+
+            while (getline(ss, field, ':')) {
+                // Skip the first token if it matches any category in the vector
+                if ((count == 0 && !DataHolder::isCategory(field))) {
+                    DataHolder::categories.push_back(field);
+                } else if(count != 0){
+                    row.push_back(field); // add field to the current row
+                }
+                count++;
+            }
+
+            if (count == 1) {
+                row.pop_back();
+            }
+
+            // Add the completed row to the main data
+            DataHolder::data.push_back(row);
+        }
+    }
+
+    DataHolder::processJSON();  // the json data is separated by newlines when in the data class so I need to match up the data with the categories in a single row
+    input_file.close();
     return true;
 }
 
 bool convertToCSV(string path, int file_type) {
-    vector<string> categories;
     if (file_type != 1) {
         extractJSON(path);
         string filename = getFileName(path, "csv");
@@ -119,26 +160,22 @@ bool convertToCSV(string path, int file_type) {
             return 1;
         }
 
-        for (int i = 0; i < DataHolder::data[0].size(); i++){
-            categories.push_back(DataHolder::data[0][i]);
-        }
-
-        for (int i = 0; i < categories.size(); i++) {
-            outfile << categories[i];
+        for (int i = 0; i < DataHolder::categories.size(); i++) {
+            outfile << DataHolder::categories[i];
             // Check if it's at the end of the categories, then no need for a comma
-            if (i != categories.size() - 1) {
+            if (i != DataHolder::categories.size() - 1) {
                 outfile << ",";
             } else {
                 outfile << "\n";
             }
         }
 
-        for (int i = 1; i < DataHolder::getSize(); i++) {
-            for (int j = 0; j < categories.size(); j++) {
+        for (int i = 1; i < DataHolder::getDataSize(); i++) {
+            for (int j = 0; j < DataHolder::categories.size(); j++) {
                 outfile << DataHolder::data[i][j];
 
                 // Check if it's at the end of the categories, then no need for a comma
-                if (j != categories.size() - 1) {
+                if (j != DataHolder::categories.size() - 1) {
                     outfile << ",";
                 } else {
                     outfile << "\n";
@@ -156,7 +193,6 @@ bool convertToCSV(string path, int file_type) {
 }
 
 bool convertToJSON(string path, int file_type) {
-    vector<string> categories;
     if (file_type != 2) {
         extractCSV(path);
         
@@ -169,24 +205,19 @@ bool convertToJSON(string path, int file_type) {
             printf("Error opening file: %s\n", filename);
             return 3;
         }
-        
-        for (int i = 0; i < DataHolder::data[0].size(); i++){
-            categories.push_back(DataHolder::data[0][i]);
-        }
-
-
+    
 
         outfile << "{\n";
         outfile << "\t\""<< catname << "\": [\n";
-        for (int i = 1; i < DataHolder::getSize(); i++) {
+        
+        for (int i = 0; i < DataHolder::getDataSize(); i++) {
             outfile << "\t\t{\n";
 
-            // Use a range-based for loop for better readability
-            for (int j = 0; j < categories.size(); j++) {
-                outfile << "\t\t\t\"" << categories[j] << "\": \"" << DataHolder::data[i][j] << "\"";
+            for (int j = 0; j < DataHolder::categories.size(); j++) {
+                outfile << "\t\t\t\"" << DataHolder::categories[j] << "\": \"" << DataHolder::data[i][j] << "\"";
 
                 // Check if it's at the end of the categories, then no need for a comma
-                if (j != categories.size() - 1) {
+                if (j != DataHolder::categories.size() - 1) {
                     outfile << ",\n";
                 } else {
                     outfile << "\n";
@@ -194,7 +225,7 @@ bool convertToJSON(string path, int file_type) {
             }
 
             // Check if it's at the end of the elements, then no need for a comma
-            if (i != DataHolder::getSize() - 1) {
+            if (i != DataHolder::getDataSize() - 1) {
                 outfile << "\t\t},\n";
             } else {
                 outfile << "\t\t}\n";
